@@ -12,9 +12,11 @@ class PokerDesk(object):
     def __init__(self, s, db, rlist, num):
         self.desknum = str(num)  # 桌号
         self.db = db
+        self.cr = db.cursor()
         self.sockfd = s
         self.rlist = rlist
         self.player = {}  # 包含座号玩家名的字典
+        self.chip = {}  # 包含玩家名筹码的字典
         self.fd_name = {}  # 包含套接字玩家名的字典
         self.master = ''  # 房主信息
         self.start = 0  # 游戏开始与否标志
@@ -45,8 +47,12 @@ class PokerDesk(object):
         self.fd_name[client] = name
         nameDict = "R %s" % self.player
         self.do_tel(nameDict)
+        sql = 'select money from player where name=%s'
+        self.cr.execute(sql, [name])
+        chip = self.cr.fetchone()[0]
+        self.chip[name] = chip
         # 给其他玩家发送进房消息
-        msg = '# %s进入了%s号桌' % (name, self.desknum)
+        msg = '# %s进入了%s号桌,筹码%d' % (name, self.desknum, chip)
         self.do_tel(msg, client)
 
     def do_tel(self, msg, c=None):
@@ -66,21 +72,22 @@ class PokerDesk(object):
                 del self.player[n]
                 break
         del self.fd_name[client]
+        del self.chip[name]
         # 在IO事件列表中清除 如果为房主 轮换至下一人
         if not offline:
             index = self.rlist.index(client)
             self.rlist.remove(client)
-            if name == self.master:
+            if len(self.rlist) == 1:
+                self.start = 0
+                self.master = ''
+            elif name == self.master:
                 self.master = self.fd_name[self.rlist[index]]
                 self.player['master'] = '*' + self.master
-        if len(self.rlist) == 1:
-            self.start = 0
-            self.master = ''
         # 关闭该玩家收发套接字 给其他玩家发消息
         client.close()
         nameDict = "R %s" % self.player
         self.do_tel(nameDict)
-        print(name, '退出')
+        self.do_tel('# %s退出了房间' % name)
 
     def do_start(self):
         '''游戏开始 发牌'''
@@ -94,7 +101,7 @@ class PokerDesk(object):
         # 游戏开始 将开始标志设为1 根据玩家人数发牌 压底注
         self.start = 1
         self.do_tel('# 游戏开始')
-        player_num = len(self.player)
+        player_num = len(self.fd_name)
         self.duch = Poker_duch(player_num)
         self.show_desk = self.duch.show_desk()
         h = iter(self.duch.player_deck)
@@ -203,7 +210,7 @@ class PokerDesk(object):
             if player_name != self.player[self.begin_seat] and self.circle ==0:
                 client.send('# 您无法选择看牌,请重新选择'.encode())
                 return
-            self.do_bet(self.next_player(), 1)
+            self.do_bet(self.next_player(), True)
         elif data[1] == 'y':
             self.do_tel('# %s同意看牌' % player_name)
             client.send(b'O')

@@ -35,7 +35,7 @@ class PokerLink(object):
         if r is not None:
             self.c.send('EXISTS'.encode())
             return
-        sql = 'insert into player (name,password,chouma) values (%s,%s,%s)'
+        sql = 'insert into player (name,password,money) values (%s,%s,%s)'
         try:
             self.cursor.execute(sql, [name, passwd, 10000])
             self.db.commit()

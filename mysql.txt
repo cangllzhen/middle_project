@@ -1,0 +1,4 @@
+create database poker character set utf8;
+create table player (name varchar(20) primary key,
+password varchar(20) not null,
+money int);
