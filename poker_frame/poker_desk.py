@@ -100,6 +100,7 @@ class PokerDesk(object):
         self.begin_seat = self.__key(self.master, self.player)
         # 游戏开始 将开始标志设为1 根据玩家人数发牌 压底注
         self.start = 1
+        self.do_tel("Rc %s" % self.bet_dict)
         self.do_tel('# 游戏开始')
         player_num = len(self.fd_name)
         self.duch = Poker_duch(player_num)
@@ -180,6 +181,7 @@ class PokerDesk(object):
             msg = '# %s加注%d' % (player_name, money)
             self.do_tel(msg, client)
             self.bet_dict[player_name] = money_all
+            self.do_tel("Rc %s" % self.bet_dict)
             print(self.bet_dict,self.circle)
             client.send(b'O')
             sleep(0.1)
@@ -197,6 +199,7 @@ class PokerDesk(object):
             msg = '# %s跟注%d' % (player_name, money)
             self.do_tel(msg, client)
             self.bet_dict[player_name] += money
+            self.do_tel("Rc %s" % self.bet_dict)
             print(self.bet_dict,self.circle)
             client.send(b'O')
             sleep(0.1)

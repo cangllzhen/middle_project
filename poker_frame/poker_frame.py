@@ -37,7 +37,7 @@ def desk(num, db):
                     else:
                         pdk.do_playingout(temp) 
                 elif data[0] == 'Q':
-                    if pak.start == 0:
+                    if pdk.start == 0:
                         pdk.do_out(temp)
                     else:
                         temp.send('# 游戏中不允许退出'.encode())

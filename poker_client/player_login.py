@@ -12,6 +12,7 @@ class Player_login(object):
     def __init__(self, s):
         self.s = s
         self.name_dict = {}
+        self.bet_dict = {' ': 0}
         self.handcard = ''
         self.deskcard = ''
         self.beting = 0
@@ -74,11 +75,17 @@ class Player_login(object):
             self.handcard = ' '.join(data.split()[1:])
         elif data[1] == 'd':
             self.deskcard = ' '.join(data.split()[1:])
+        elif data[1] == 'c':
+            dic = ' '.join(data.split()[1:])
+            for name in eval(dic):
+                self.bet_dict[name] = eval(dic)[name]
         else:
             dic = ' '.join(data.split()[1:])
             # 将字符串转为表达式
             self.name_dict = eval(dic)
-        desk_print(self.name_dict, self.handcard, self.deskcard)
+            for n in self.name_dict:
+                self.bet_dict[self.name_dict[n]] = 0
+        desk_print(self.name_dict, self.handcard, self.deskcard, self.bet_dict)
 
     def do_bet(self, data):
         if data[1] == 's':
@@ -95,6 +102,7 @@ class Player_login(object):
         self.name_dict = {}
         self.handcard = ''
         self.deskcard = ''
+        self.bet_dict = {' ': 0}
 
     def do_fold(self, sig, frame):
         self.sockfr.send(b'Cf')

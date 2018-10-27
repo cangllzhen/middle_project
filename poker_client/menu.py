@@ -23,19 +23,19 @@ def menu1(L):
     print('=========================================')
 
 
-def desk_print(dict, hand, desk):
+def desk_print(dict, hand, desk, bet):
     for i in range(1, 9):
         if i not in dict:
-            dict[i]=' '
+            dict[i] = ' '
     print('=====================================================')
-    print('玩家1:%-15s' % dict[1], '下注：')
-    print('玩家2:%-15s' % dict[2], '下注：')
-    print('玩家3:%-15s' % dict[3], '下注：')
-    print('玩家4:%-15s' % dict[4], '下注：')
-    print('玩家5:%-15s' % dict[5], '下注：')
-    print('玩家6:%-15s' % dict[6], '下注：')
-    print('玩家7:%-15s' % dict[7], '下注：')
-    print('玩家8:%-15s' % dict[8], '下注：')
+    print('玩家1:%-15s' % dict[1], '下注：%d' % bet[dict[1]])
+    print('玩家2:%-15s' % dict[2], '下注：%d' % bet[dict[2]])
+    print('玩家3:%-15s' % dict[3], '下注：%d' % bet[dict[3]])
+    print('玩家4:%-15s' % dict[4], '下注：%d' % bet[dict[4]])
+    print('玩家5:%-15s' % dict[5], '下注：%d' % bet[dict[5]])
+    print('玩家6:%-15s' % dict[6], '下注：%d' % bet[dict[6]])
+    print('玩家7:%-15s' % dict[7], '下注：%d' % bet[dict[7]])
+    print('玩家8:%-15s' % dict[8], '下注：%d' % bet[dict[8]])
     print('桌牌:%s 手牌:%s' % (desk, hand))
     print('*exit退出*','*ff刷新*','*房主%s输入start开始游戏*' % dict['master'])
     print('=====================================================')
