@@ -63,7 +63,7 @@ class Player_login(object):
         self.s.send(msg.encode())
         data = self.s.recv(128).decode()
         try:
-            self.sockfr.connect(('127.0.0.1', int(data)))
+            self.sockfr.connect(('172.18.4.98', int(data)))
             return 'ok'
         except Exception as e:
             print(e)
@@ -99,10 +99,10 @@ class Player_login(object):
 
     def do_end(self):
         print('游戏结束')
-        self.name_dict = {}
         self.handcard = ''
         self.deskcard = ''
-        self.bet_dict = {' ': 0}
+        for name in self.bet_dict:
+            self.bet_dict[name] = 0
 
     def do_fold(self, sig, frame):
         self.sockfr.send(b'Cf')

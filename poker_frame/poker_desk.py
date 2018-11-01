@@ -5,6 +5,7 @@ import select
 from port import *
 from time import sleep
 from poker_duch import *
+from collections import ChainMap
 
 
 class PokerDesk(object):
@@ -270,6 +271,15 @@ class PokerDesk(object):
         win_list = self.duch.max_hand(hand_dict)
         self.do_tel('# %s是赢家' % ' '.join(win_list))
         all_money = sum(self.bet_dict.values()) + sum(self.fold_dict.values())
+        win_money = all_money/len(win_list)
+        chipdic = ChainMap(self.bet_dict, self.fold_dict)
+        for name in self.chip:
+            chip = self.chip[name] - chipdic[name]
+            if name in win_list:
+                chip += win_money
+            sql = 'update player set money=%s where name=%s'
+            self.cr.execute(sql, [chip, name])
+        self.db.commit()
         self.do_end()
 
     def do_end(self):
@@ -293,15 +303,15 @@ class PokerDesk(object):
                 return n
 
 
-        
-
-        
-        
-            
 
 
 
-    
+
+
+
+
+
+
 
 
 

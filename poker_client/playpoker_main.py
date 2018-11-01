@@ -11,7 +11,7 @@ def main():
     '''用户登录注册界面'''
     sockfd = socket()
     try:
-        sockfd.connect(('127.0.0.1', 8888))
+        sockfd.connect(('172.18.4.98', 8888))
     except Exception as e:
         print(e)
         return
@@ -107,7 +107,7 @@ def desk_run(sockfr, pln, name, num):
                     elif data[0] == '#':
                         print(data)
                     elif data[0] == 'B':
-                        # signal.alarm(15)
+                        signal.alarm(30)
                         signal.signal(signal.SIGALRM, pln.do_fold)
                         pln.do_bet(data)
                     elif data[0] == 'O':
