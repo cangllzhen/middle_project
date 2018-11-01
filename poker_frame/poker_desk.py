@@ -10,12 +10,13 @@ from collections import ChainMap
 
 class PokerDesk(object):
     '''桌子类 处理玩家进出 控制游戏流程'''
-    def __init__(self, s, db, rlist, num):
+    def __init__(self, s, db, rlist, num, tm):
         self.desknum = str(num)  # 桌号
         self.db = db
         self.cr = db.cursor()
         self.sockfd = s
         self.rlist = rlist
+        self.tm = tm
         self.player = {}  # 包含座号玩家名的字典
         self.chip = {}  # 包含玩家名筹码的字典
         self.fd_name = {}  # 包含套接字玩家名的字典
@@ -61,7 +62,7 @@ class PokerDesk(object):
         for r in self.rlist:
             if r is self.sockfd or r is c:
                 continue
-            r.send(msg.encode())
+            r.send(self.tm.send(msg))
         sleep(0.1)
 
     def do_out(self, client, offline=False):
@@ -110,7 +111,7 @@ class PokerDesk(object):
         for client in self.fd_name:
             handcard = next(h)
             msg = 'Rh ' + ' &'.join(handcard)
-            client.send(msg.encode())
+            client.send(self.tm.send(msg))
             name = self.fd_name[client]
             self.handcard_dict[name] = handcard
             self.bet_dict[name] = 100
@@ -144,9 +145,9 @@ class PokerDesk(object):
             self.do_fold(temp)
             return
         if not check:
-            temp.send(b'B ')
+            temp.send(self.tm.send('B '))
         else:
-            temp.send(b'Bs')
+            temp.send(self.tm.send('Bs'))
 
     def next_player(self, n=None):
         '''确定下一名下注玩家的座号'''
@@ -173,18 +174,20 @@ class PokerDesk(object):
             try:
                 money = int(data[2:].strip())
             except:
-                client.send('# 金额输入有误'.encode())
+                msg = self.tm.send('# 金额输入有误')
+                client.send(msg)
                 return
             money_all = money + self.bet_dict[player_name]
             if money_all < max(self.bet_dict.values()):
-                client.send('# 金额低于上一个玩家,请重新输入'.encode())
+                msg = self.tm.send('# 金额低于上一个玩家,请重新输入')
+                client.send(msg)
                 return
             msg = '# %s加注%d' % (player_name, money)
             self.do_tel(msg, client)
             self.bet_dict[player_name] = money_all
             self.do_tel("Rc %s" % self.bet_dict)
             print(self.bet_dict,self.circle)
-            client.send(b'O')
+            client.send(self.tm.send('O'))
             sleep(0.1)
             next_player = self.next_player()
             if len(set(self.bet_dict.values())) == 1 and self.circle > 0:
@@ -194,7 +197,8 @@ class PokerDesk(object):
         # 处理跟注
         elif data[1] == 'r':
             if self.bet_dict[player_name] == max(self.bet_dict.values()):
-                client.send('# 您无法选择跟注,请重新输入'.encode())
+                msg = self.tm.send('# 您无法选择跟注,请重新输入')
+                client.send(msg)
                 return
             money = max(self.bet_dict.values()) - self.bet_dict[player_name]
             msg = '# %s跟注%d' % (player_name, money)
@@ -202,7 +206,7 @@ class PokerDesk(object):
             self.bet_dict[player_name] += money
             self.do_tel("Rc %s" % self.bet_dict)
             print(self.bet_dict,self.circle)
-            client.send(b'O')
+            client.send(self.tm.send('O'))
             sleep(0.1)
             next_player = self.next_player()
             if len(set(self.bet_dict.values())) == 1 and self.circle > 0:
@@ -212,12 +216,13 @@ class PokerDesk(object):
         # 处理看牌
         elif data[1] == 'h':
             if player_name != self.player[self.begin_seat] and self.circle ==0:
-                client.send('# 您无法选择看牌,请重新选择'.encode())
+                msg = self.tm.send('# 您无法选择看牌,请重新选择')
+                client.send(msg)
                 return
             self.do_bet(self.next_player(), True)
         elif data[1] == 'y':
             self.do_tel('# %s同意看牌' % player_name)
-            client.send(b'O')
+            client.send(self.tm.send('O'))
             sleep(0.1)
             next_player = self.next_player()
             if len(set(self.bet_dict.values())) == 1 and self.circle > 0:
@@ -237,7 +242,7 @@ class PokerDesk(object):
         self.playing_seat.remove(player_seat)
         self.do_tel('# %s选择了弃牌' % player_name)
         if client not in self.offline:
-            client.send(b'O')
+            client.send(self.tm.send('O'))
         if len(self.playing_seat) == 2:
             self.do_win()
             return

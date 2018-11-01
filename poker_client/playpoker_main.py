@@ -5,6 +5,7 @@ import signal
 import sys
 from menu import *
 from player_login import *
+from tcp_m import *
 
 
 def main():
@@ -70,6 +71,7 @@ def desk_choose(name, pln):
 
 def desk_run(sockfr, pln, name, num):
         '''开始游戏'''
+        tm = TcpMessage()
         sockfr.send(name.encode())
         print('欢迎进入%s桌' % num)
         rlist = [sockfr, sys.stdin]
@@ -77,27 +79,38 @@ def desk_run(sockfr, pln, name, num):
             r, w, e = select.select(rlist, [], [])
             for s in r:
                 if s is sys.stdin:
-                    msg = sys.stdin.readline().strip()
-                    if msg == 'exit':
-                        sockfr.send(b'Q ')
-                    elif msg == 'start':
+                    msg0 = sys.stdin.readline().strip()
+                    if msg0 == 'exit':
+                        msg = tm.send('Q ')
+                        sockfr.send(msg)
+                    elif msg0 == 'start':
+                        msg = tm.send('S ')
                         sockfr.send(b'S ')
-                    # elif msg == 'ff':
+                    # elif msg0 == 'ff':
                     #     desk_print(name_dict)
-                    elif msg[:2] == 'ca' and pln.beting in [1, 2]:
-                        sockfr.send(('Ca' + msg[2:]).encode())
-                    elif msg == 'r' and pln.beting == 1:
-                        sockfr.send(b'Cr')
-                    elif msg == 'ch' and pln.beting == 1:
-                        sockfr.send(b'Ch')
-                    elif msg == 'f' and pln.beting == 1:
-                        sockfr.send(b'Cf')
-                    elif msg == 'y' and pln.beting ==2:
-                        sockfr.send(b'Cy')
+                    elif msg0[:2] == 'ca' and pln.beting in [1, 2]:
+                        msg = tm.send('Ca' + msg0[2:])
+                        sockfr.send(msg)
+                    elif msg0 == 'r' and pln.beting == 1:
+                        msg = tm.send('Cr')
+                        sockfr.send(msg)
+                    elif msg0 == 'ch' and pln.beting == 1:
+                        msg = tm.send('Ch')
+                        sockfr.send(msg)
+                    elif msg0 == 'f' and pln.beting == 1:
+                        msg = tm.send('Cf')
+                        sockfr.send(msg)
+                    elif msg0 == 'y' and pln.beting ==2:
+                        msg = tm.send('Cy')
+                        sockfr.send(msg)
                     else:
-                        sockfr.send((': ' + msg).encode())
+                        msg = tm.send(': ' + msg0)
+                        sockfr.send(msg)
                 else:
-                    data = s.recv(1024).decode()
+                    data0 = s.recv(1024).decode()
+                    data = tm.data_process(data0)
+                    if not data:
+                        continue
                     # try:
                     if data == '':
                         print("服务器错误")

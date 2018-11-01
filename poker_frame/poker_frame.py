@@ -7,6 +7,7 @@ from socket import *
 import pymysql
 from poker_desk import *
 from port import *
+from tcp_m import *
 
 
 def main():
@@ -20,17 +21,21 @@ def desk(num, db):
     sockfd = socket()
     sockfd.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     port = d_port[str(num)]
-    sockfd.bind(('127.0.0.1', port))
+    sockfd.bind(('0.0.0.0', port))
     sockfd.listen(8)
     rlist = [sockfd]
-    pdk = PokerDesk(sockfd, db, rlist, num)
+    tm = TcpMessage()
+    pdk = PokerDesk(sockfd, db, rlist, num, tm)
     while True:
         r, w, e = select.select(rlist, [], [])
         for temp in r:
             if temp is sockfd:
                 pdk.new_coming(temp)
             else:
-                data = temp.recv(256).decode()
+                data0 = temp.recv(1024)
+                data = tm.recv(data0)
+                if not data:
+                    continue
                 if data == '':
                     if pdk.start == 0:
                         pdk.do_out(temp)
@@ -40,13 +45,16 @@ def desk(num, db):
                     if pdk.start == 0:
                         pdk.do_out(temp)
                     else:
-                        temp.send('# 游戏中不允许退出'.encode())
+                        msg = tm.send('# 游戏中不允许退出')
+                        temp.send(msg)
                 elif data[0] == 'S' and pdk.fd_name[temp] == pdk.master:
                     if pdk.start == 1:
-                        temp.send('# 游戏进行中'.encode())
+                        msg = tm.send('# 游戏进行中')
+                        temp.send(msg)
                         continue
                     if len(rlist) < 4:
-                        temp.send('# 人数少于三人'.encode())
+                        msg = tm.send('# 人数少于三人')
+                        temp.send(msg)
                         continue
                     pdk.do_start()
                 elif data[0] == 'C' and pdk.start == 1:

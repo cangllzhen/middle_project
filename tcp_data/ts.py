@@ -1,6 +1,6 @@
 import struct
 
-headerSize = 12
+headerSize = 4
 # 把数据存入缓冲区，类似于push数据
 dataBuffer += data
 def data_process(dataBuffer):
