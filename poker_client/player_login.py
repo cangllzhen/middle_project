@@ -6,6 +6,7 @@ from socket import *
 import select
 import sys
 import signal
+from tcp_m import *
 
 
 class Player_login(object):
@@ -16,6 +17,7 @@ class Player_login(object):
         self.handcard = ''
         self.deskcard = ''
         self.beting = 0
+        self.tm = TcpMessage()
 
     def user_login(self):
         '''用户登录'''
@@ -105,7 +107,7 @@ class Player_login(object):
             self.bet_dict[name] = 0
 
     def do_fold(self, sig, frame):
-        self.sockfr.send(b'Cf')
+        self.sockfr.send(self.tm.send('Cf'))
 
 
 
