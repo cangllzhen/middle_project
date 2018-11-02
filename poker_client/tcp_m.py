@@ -3,17 +3,17 @@ import json
 
 
 class TcpMessage(object):
-    def __init__():
+    def __init__(self):
         self.headerSize = 4
         # 把数据存入缓冲区，类似于push数据
         self.dataBuffer = bytes()
 
-    def msg_process(self, msg):
-        body = json.dumps(msg)
-        headPack = struct.pack("!I", body.__len__())
-        return headPack + body.encode()
+    def send(self, msg):
+        body = msg.encode()
+        headPack = struct.pack("!I", len(body))
+        return headPack + body
 
-    def data_process(self, data):
+    def recv(self, data):
         self.dataBuffer += data
         while True:
             if len(self.dataBuffer) < self.headerSize:

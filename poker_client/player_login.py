@@ -65,7 +65,8 @@ class Player_login(object):
         self.s.send(msg.encode())
         data = self.s.recv(128).decode()
         try:
-            self.sockfr.connect(('172.18.4.98', int(data)))
+            # self.sockfr.connect(('172.18.4.98', int(data)))
+            self.sockfr.connect(('127.0.0.1', int(data)))
             return 'ok'
         except Exception as e:
             print(e)

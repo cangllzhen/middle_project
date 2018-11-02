@@ -1,17 +1,17 @@
 import struct
-import json
+# import json
 
 
 class TcpMessage(object):
-    def __init__():
+    def __init__(self):
         self.headerSize = 4
         # 把数据存入缓冲区，类似于push数据
         self.dataBuffer = bytes()
 
     def send(self, msg):
-        body = json.dumps(msg)
-        headPack = struct.pack("!I", body.__len__())
-        return headPack + body.encode()
+        body = msg.encode()
+        headPack = struct.pack("!I", len(body))
+        return headPack + body
 
     def recv(self, data):
         if not data:

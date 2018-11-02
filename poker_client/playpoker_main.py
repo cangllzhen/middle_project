@@ -12,7 +12,8 @@ def main():
     '''用户登录注册界面'''
     sockfd = socket()
     try:
-        sockfd.connect(('172.18.4.98', 8888))
+        # sockfd.connect(('172.18.4.98', 8888))
+        sockfd.connect(('127.0.0.1', 8888))
     except Exception as e:
         print(e)
         return
@@ -85,7 +86,7 @@ def desk_run(sockfr, pln, name, num):
                         sockfr.send(msg)
                     elif msg0 == 'start':
                         msg = tm.send('S ')
-                        sockfr.send(b'S ')
+                        sockfr.send(msg)
                     # elif msg0 == 'ff':
                     #     desk_print(name_dict)
                     elif msg0[:2] == 'ca' and pln.beting in [1, 2]:
@@ -107,8 +108,8 @@ def desk_run(sockfr, pln, name, num):
                         msg = tm.send(': ' + msg0)
                         sockfr.send(msg)
                 else:
-                    data0 = s.recv(1024).decode()
-                    data = tm.data_process(data0)
+                    data0 = s.recv(1024)
+                    data = tm.recv(data0)
                     if not data:
                         continue
                     # try:
