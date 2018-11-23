@@ -22,7 +22,7 @@ class TcpMessage(object):
                 # print("数据包（%s Byte）小于消息头部长度，跳出小循环" % len(dataBuffer))
                 break
             # 读取包头
-            # struct中:!代表Network order，3I代表3个unsigned int数据
+            # struct中:!代表Network order，I代表１个unsigned int数据
             headPack = struct.unpack('!I', self.dataBuffer[:self.headerSize])
             bodySize = headPack[0]
             # 分包情况处理，跳出函数继续接收数据

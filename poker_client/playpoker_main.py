@@ -46,8 +46,7 @@ def main():
 def desk_choose(name, pln):
     '''选择桌号界面'''
     while True:
-        # 未完成
-        menu1(['1', '1', '1', '1', '1', '1', '1', '1', '1', '1'])
+        menu1()
         try:
             cmd = input('请选择桌号(q退出)')
             dnum = int(cmd)

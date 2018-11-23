@@ -2,6 +2,7 @@
 
 
 def menu0():
+    '''登录界面'''
     print('+========================+')
     print('|                        |')
     print('|   1.登录               |')
@@ -11,19 +12,21 @@ def menu0():
     print('+========================+')
 
 
-def menu1(L):
+def menu1():
+    '''选桌界面'''
     print('=========================================')
     print('|                                       |')
-    print('|  1.01桌(%s/8) 2.02桌(%s/8) 3.03桌(%s/8)  |' % (L[0], L[1], L[2]))
-    print('|  4.04桌(%s/8) 5.05桌(%s/8) 6.06桌(%s/8)  |' % (L[3], L[4], L[5]))
-    print('|  7.07桌(%s/8) 8.08桌(%s/8) 9.09桌(%s/8)  |' % (L[6], L[7], L[8]))
-    print('|  0.10桌(%s/8)                          |' % L[9])
+    print('|  1.01桌      2.02桌      3.03桌       |')
+    print('|  4.04桌      5.05桌      6.06桌       |')
+    print('|  7.07桌      8.08桌      9.09桌       |')
+    print('|  0.10桌                               |' )
     print('|                                       |')
-    print('| 输入桌号,q退出,ff刷新                 |')
+    print('| 输入桌号,q退出                        |')
     print('=========================================')
 
 
 def desk_print(dict, hand, desk, bet):
+    '''游戏中界面'''
     for i in range(1, 9):
         if i not in dict:
             dict[i] = ' '
@@ -37,14 +40,14 @@ def desk_print(dict, hand, desk, bet):
     print('玩家7:%-15s' % dict[7], '下注：%d' % bet[dict[7]])
     print('玩家8:%-15s' % dict[8], '下注：%d' % bet[dict[8]])
     print('桌牌:%s 手牌:%s' % (desk, hand))
-    print('*exit退出*','*ff刷新*','*房主%s输入start开始游戏*' % dict['master'])
+    print('*exit退出*','*房主%s输入start开始游戏*' % dict['master'])
     print('=====================================================')
 
 
 if __name__ == '__main__':
     menu0()
     menu1()
-    desk_print(['zhangsan', 'lisi'])
+
 
 
 

@@ -53,9 +53,9 @@ class PokerDesk(object):
         self.cr.execute(sql, [name])
         chip = self.cr.fetchone()[0]
         self.chip[name] = chip
-        # 给其他玩家发送进房消息
+        # 给玩家发送进房消息
         msg = '# %s进入了%s号桌,筹码%d' % (name, self.desknum, chip)
-        self.do_tel(msg, client)
+        self.do_tel(msg)
 
     def do_tel(self, msg, c=None):
         '''给所有玩家发送信息'''
@@ -219,6 +219,7 @@ class PokerDesk(object):
                 msg = self.tm.send('# 您无法选择看牌,请重新选择')
                 client.send(msg)
                 return
+            self.do_tel('# %s选择了看牌' % player_name)
             self.do_bet(self.next_player(), True)
         elif data[1] == 'y':
             self.do_tel('# %s同意看牌' % player_name)
@@ -270,6 +271,7 @@ class PokerDesk(object):
             self.do_fold(client)
 
     def do_win(self):
+        '''宣布赢家'''
         hand_dict = {}
         for name in self.bet_dict:
            hand_dict[name] = self.handcard_dict[name]
